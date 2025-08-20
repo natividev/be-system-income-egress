@@ -19,6 +19,7 @@ import { TimelineModule } from './modules/timeline/timeline.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';
+import { InventoryModule } from './modules/inventory/inventory.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';
     AnulacionModule,
     TimelineModule,
     AuthModule,
+    InventoryModule,
   ],
   controllers: [AppController],
   providers: [
