@@ -31,6 +31,11 @@ export class InventoryController {
     return this.inventoryService.listarProductos(filtros);
   }
 
+  @Get('productos-lista')
+  listarProductosSelect() {
+    return this.inventoryService.listarProductosSelect();
+  }
+
   // GET /inventory/productos/:id_producto
   @Get('productos/:id_producto')
   obtenerProducto(@Param('id_producto', ParseIntPipe) id_producto: number) {

@@ -2,7 +2,7 @@ import { BadRequestException, ConflictException, Injectable, NotFoundException }
 import { CreateInventoryDto } from './dto/create-inventory.dto';
 import { UpdateInventoryDto } from './dto/update-inventory.dto';
 import { PrismaService } from 'src/prisma.service';
-import { Prisma } from '@prisma/client';
+import { Prisma, tipo_movimiento } from '@prisma/client';
 import { FiltrosProductoDto } from './dto/filtros-producto.dto';
 import { CreateMovimientoDto, TipoMovimiento } from './dto/create-movimiento.dto';
 
@@ -70,6 +70,11 @@ export class InventoryService {
     return { total, items };
   }
 
+  async listarProductosSelect() {
+    return await this.prisma.producto.findMany();
+  }
+
+
   async obtenerProducto(id_producto: number) {
     const producto = await this.prisma.producto.findUnique({
       where: { id: id_producto },
@@ -120,6 +125,16 @@ export class InventoryService {
       throw new BadRequestException('La cantidad debe ser mayor que 0.');
     }
 
+    const tipoMoviento = await this.prisma.tipo_movimientos.findFirst({
+      where: {
+        id: tipo
+      }
+    })
+
+    if (!['entrada', 'salida', 'ajuste'].includes(tipoMoviento.nombre)) {
+      throw new BadRequestException('Tipo de movimiento inválido');
+    }
+
     return await this.prisma.$transaction(async (tx) => {
       const producto = await tx.producto.findUnique({ where: { id: id_producto } });
       if (!producto) throw new NotFoundException('Producto no encontrado');
@@ -156,7 +171,7 @@ export class InventoryService {
       // 1) Crear movimiento
       const movimiento = await tx.movimiento.create({
         data: {
-          tipo,
+          tipo: tipoMoviento.nombre as tipo_movimiento,
           cantidad,
           referencia: dto.referencia ?? null,
           observacion: dto.observacion ?? null,
