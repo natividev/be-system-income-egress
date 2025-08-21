@@ -129,7 +129,7 @@ export class InventoryService {
       where: {
         id: tipo
       }
-    }) 
+    })
 
     if (!['entrada', 'salida', 'ajuste'].includes(tipoMoviento.nombre)) {
       throw new BadRequestException('Tipo de movimiento inválido');
@@ -194,9 +194,7 @@ export class InventoryService {
     await this.obtenerProducto(id_producto);
     const [items, total] = await this.prisma.$transaction([
       this.prisma.movimiento.findMany({
-        where: { id: id_producto },
-        skip: offset,
-        take: limit,
+        where: { id_producto: id_producto },
         orderBy: { fecha: 'desc' },
       }),
       this.prisma.movimiento.count({ where: { id_producto } }),
