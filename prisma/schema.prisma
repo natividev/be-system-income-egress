@@ -261,7 +261,7 @@ enum EstadoOrden {
 }
 
 model producto {
-  id_producto      Int     @id @default(autoincrement())
+  id               Int     @id @default(autoincrement())
   nombre           String  @db.VarChar(150)
   descripcion      String? @db.Text
   codigo_barra     String? @unique
@@ -271,27 +271,27 @@ model producto {
   id_categoria     Int
   id_unidad_medida Int
 
-  categoria     categoria     @relation(fields: [id_categoria], references: [id_categoria])
-  unidad_medida unidad_medida @relation(fields: [id_unidad_medida], references: [id_unidad_medida])
+  categoria     categoria     @relation(fields: [id_categoria], references: [id])
+  unidad_medida unidad_medida @relation(fields: [id_unidad_medida], references: [id])
   movimiento    movimiento[]
 
   @@map("producto")
 }
 
 model categoria {
-  id_categoria Int        @id @default(autoincrement())
-  nombre       String     @db.VarChar(100)
-  descripcion  String?    @db.Text
-  productos    producto[]
+  id          Int        @id @default(autoincrement())
+  nombre      String     @db.VarChar(100)
+  descripcion String?    @db.Text
+  productos   producto[]
 
   @@map("categoria")
 }
 
 model unidad_medida {
-  id_unidad_medida Int        @id @default(autoincrement())
-  nombre           String     @db.VarChar(50) // Ej: "Unidad", "Caja", "Litro"
-  abreviatura      String     @db.VarChar(10) // Ej: "u", "cj", "lt"
-  productos        producto[]
+  id          Int        @id @default(autoincrement())
+  nombre      String     @db.VarChar(50) // Ej: "Unidad", "Caja", "Litro"
+  abreviatura String     @db.VarChar(10) // Ej: "u", "cj", "lt"
+  productos   producto[]
 
   @@map("unidad_medida")
 }
@@ -303,18 +303,23 @@ enum tipo_movimiento {
 }
 
 model movimiento {
-  id_movimiento Int             @id @default(autoincrement())
-  tipo          tipo_movimiento
-  cantidad      Int
-  fecha         DateTime        @default(now())
-  referencia    String?         @db.VarChar(150) // Ej: número de factura o nota
-  observacion   String?         @db.Text
+  id          Int             @id @default(autoincrement())
+  tipo        tipo_movimiento
+  cantidad    Int
+  fecha       DateTime        @default(now())
+  referencia  String?         @db.VarChar(150) // Ej: número de factura o nota
+  observacion String?         @db.Text
 
   id_producto Int
   id_usuario  Int
 
-  producto producto @relation(fields: [id_producto], references: [id_producto])
+  producto producto @relation(fields: [id_producto], references: [id])
   usuario  user     @relation(fields: [id_usuario], references: [id])
 
   @@map("movimiento")
+}
+
+model tipo_movimientos {
+  id     Int    @id @default(autoincrement())
+  nombre String @db.VarChar(50)
 }

@@ -8,7 +8,7 @@ import { currencyAdapter } from 'src/plugins';
 
 @Injectable()
 export class GeneralesService {
-  constructor(private readonly _prisma: PrismaService) {}
+  constructor(private readonly _prisma: PrismaService) { }
 
   genAI = new GoogleGenerativeAI(envs.apiKeyGoogleGemini);
   model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
@@ -91,5 +91,31 @@ export class GeneralesService {
 
   private async egresos() {
     return await this._prisma.total_egreso.findFirst();
+  }
+
+  async listarCategorias() {
+    return await this._prisma.categoria.findMany({
+      select: {
+        id: true,
+        nombre: true,
+        descripcion: true,
+      },
+      orderBy: { nombre: 'asc' },
+    });
+  }
+
+  async listarUnidadesMedida() {
+    return await this._prisma.unidad_medida.findMany({
+      select: {
+        id: true,
+        nombre: true,
+        abreviatura: true,
+      },
+      orderBy: { nombre: 'asc' },
+    });
+  }
+
+  async listarTipoMovimiento() {
+    return await this._prisma.tipo_movimientos.findMany();
   }
 }

@@ -25,7 +25,7 @@ ALTER TABLE `total_log` MODIFY `fecha` DATETIME NOT NULL DEFAULT NOW();
 
 -- CreateTable
 CREATE TABLE `producto` (
-    `id_producto` INTEGER NOT NULL AUTO_INCREMENT,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `nombre` VARCHAR(150) NOT NULL,
     `descripcion` TEXT NULL,
     `codigo_barra` VARCHAR(191) NULL,
@@ -36,30 +36,30 @@ CREATE TABLE `producto` (
     `id_unidad_medida` INTEGER NOT NULL,
 
     UNIQUE INDEX `producto_codigo_barra_key`(`codigo_barra`),
-    PRIMARY KEY (`id_producto`)
+    PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `categoria` (
-    `id_categoria` INTEGER NOT NULL AUTO_INCREMENT,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `nombre` VARCHAR(100) NOT NULL,
     `descripcion` TEXT NULL,
 
-    PRIMARY KEY (`id_categoria`)
+    PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `unidad_medida` (
-    `id_unidad_medida` INTEGER NOT NULL AUTO_INCREMENT,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `nombre` VARCHAR(50) NOT NULL,
     `abreviatura` VARCHAR(10) NOT NULL,
 
-    PRIMARY KEY (`id_unidad_medida`)
+    PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `movimiento` (
-    `id_movimiento` INTEGER NOT NULL AUTO_INCREMENT,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `tipo` ENUM('entrada', 'salida', 'ajuste') NOT NULL,
     `cantidad` INTEGER NOT NULL,
     `fecha` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -68,17 +68,25 @@ CREATE TABLE `movimiento` (
     `id_producto` INTEGER NOT NULL,
     `id_usuario` INTEGER NOT NULL,
 
-    PRIMARY KEY (`id_movimiento`)
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `tipo_movimientos` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `nombre` VARCHAR(50) NOT NULL,
+
+    PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `producto` ADD CONSTRAINT `producto_id_categoria_fkey` FOREIGN KEY (`id_categoria`) REFERENCES `categoria`(`id_categoria`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `producto` ADD CONSTRAINT `producto_id_categoria_fkey` FOREIGN KEY (`id_categoria`) REFERENCES `categoria`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `producto` ADD CONSTRAINT `producto_id_unidad_medida_fkey` FOREIGN KEY (`id_unidad_medida`) REFERENCES `unidad_medida`(`id_unidad_medida`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `producto` ADD CONSTRAINT `producto_id_unidad_medida_fkey` FOREIGN KEY (`id_unidad_medida`) REFERENCES `unidad_medida`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `movimiento` ADD CONSTRAINT `movimiento_id_producto_fkey` FOREIGN KEY (`id_producto`) REFERENCES `producto`(`id_producto`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `movimiento` ADD CONSTRAINT `movimiento_id_producto_fkey` FOREIGN KEY (`id_producto`) REFERENCES `producto`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `movimiento` ADD CONSTRAINT `movimiento_id_usuario_fkey` FOREIGN KEY (`id_usuario`) REFERENCES `user`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

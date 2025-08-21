@@ -21,8 +21,8 @@ export class InventoryService {
         precio_unitario: new Prisma.Decimal(dto.precio_unitario),
         stock_actual: dto.stock_actual ?? 0,
         activo: dto.activo ?? true,
-        categoria: { connect: { id_categoria: dto.id_categoria } },
-        unidad_medida: { connect: { id_unidad_medida: dto.id_unidad_medida } },
+        categoria: { connect: { id: dto.id_categoria } },
+        unidad_medida: { connect: { id: dto.id_unidad_medida } },
       };
 
       return await this.prisma.producto.create({ data });
@@ -58,7 +58,7 @@ export class InventoryService {
         where,
         skip: offset,
         take: limit,
-        orderBy: { id_producto: 'desc' },
+        orderBy: { id: 'desc' },
         include: {
           categoria: true,
           unidad_medida: true,
@@ -72,7 +72,7 @@ export class InventoryService {
 
   async obtenerProducto(id_producto: number) {
     const producto = await this.prisma.producto.findUnique({
-      where: { id_producto },
+      where: { id: id_producto },
       include: { categoria: true, unidad_medida: true },
     });
     if (!producto) throw new NotFoundException('Producto no encontrado');
@@ -83,7 +83,7 @@ export class InventoryService {
     await this.obtenerProducto(id_producto);
     try {
       return await this.prisma.producto.update({
-        where: { id_producto },
+        where: { id: id_producto },
         data: {
           ...dto,
           precio_unitario: dto.precio_unitario !== undefined
@@ -102,7 +102,7 @@ export class InventoryService {
   async desactivarProducto(id_producto: number) {
     await this.obtenerProducto(id_producto);
     return this.prisma.producto.update({
-      where: { id_producto },
+      where: { id: id_producto },
       data: { activo: false },
     });
   }
@@ -121,7 +121,7 @@ export class InventoryService {
     }
 
     return await this.prisma.$transaction(async (tx) => {
-      const producto = await tx.producto.findUnique({ where: { id_producto } });
+      const producto = await tx.producto.findUnique({ where: { id: id_producto } });
       if (!producto) throw new NotFoundException('Producto no encontrado');
 
       let nuevoStock = producto.stock_actual;
@@ -160,14 +160,14 @@ export class InventoryService {
           cantidad,
           referencia: dto.referencia ?? null,
           observacion: dto.observacion ?? null,
-          producto: { connect: { id_producto } },
+          producto: { connect: { id: id_producto } },
           usuario: { connect: { id: dto.id_usuario } }, // ajusta si tu modelo es "usuario" con id_usuario
         },
       });
 
       // 2) Actualizar stock del producto
       await tx.producto.update({
-        where: { id_producto },
+        where: { id: id_producto },
         data: { stock_actual: nuevoStock },
       });
 
@@ -179,7 +179,7 @@ export class InventoryService {
     await this.obtenerProducto(id_producto);
     const [items, total] = await this.prisma.$transaction([
       this.prisma.movimiento.findMany({
-        where: { id_producto },
+        where: { id: id_producto },
         skip: offset,
         take: limit,
         orderBy: { fecha: 'desc' },
