@@ -119,7 +119,7 @@ export class InventoryService {
    * - Usa transacción para consistencia.
    */
   async crearMovimiento(dto: CreateMovimientoDto) {
-    const { id_producto, cantidad, tipo } = dto;
+    const { id, cantidad, tipo } = dto;
 
     if (cantidad <= 0) {
       throw new BadRequestException('La cantidad debe ser mayor que 0.');
@@ -129,19 +129,19 @@ export class InventoryService {
       where: {
         id: tipo
       }
-    })
+    }) 
 
     if (!['entrada', 'salida', 'ajuste'].includes(tipoMoviento.nombre)) {
       throw new BadRequestException('Tipo de movimiento inválido');
     }
 
     return await this.prisma.$transaction(async (tx) => {
-      const producto = await tx.producto.findUnique({ where: { id: id_producto } });
+      const producto = await tx.producto.findUnique({ where: { id: id } });
       if (!producto) throw new NotFoundException('Producto no encontrado');
 
       let nuevoStock = producto.stock_actual;
 
-      switch (tipo) {
+      switch (tipoMoviento.nombre as tipo_movimiento) {
         case TipoMovimiento.entrada:
           nuevoStock = producto.stock_actual + cantidad;
           break;
@@ -175,14 +175,14 @@ export class InventoryService {
           cantidad,
           referencia: dto.referencia ?? null,
           observacion: dto.observacion ?? null,
-          producto: { connect: { id: id_producto } },
+          producto: { connect: { id } },
           usuario: { connect: { id: dto.id_usuario } }, // ajusta si tu modelo es "usuario" con id_usuario
         },
       });
 
       // 2) Actualizar stock del producto
       await tx.producto.update({
-        where: { id: id_producto },
+        where: { id },
         data: { stock_actual: nuevoStock },
       });
 
